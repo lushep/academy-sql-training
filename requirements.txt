@@ -1,0 +1,4 @@
+pyodbc           # Python ODBC library for SQL Server
+pandas           # For data manipulation (optional)
+sqlalchemy       # ORM library for SQL
+python-dotenv    # For managing environment variables (optional)
