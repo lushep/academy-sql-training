@@ -1,0 +1,37 @@
+# Use a base image with Python and Node.js pre-installed
+FROM mcr.microsoft.com/vscode/devcontainers/python:3.11-bullseye
+
+# Install SQL Server tools and dependencies
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+    && curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+    && apt-get update \
+    && ACCEPT_EULA=Y apt-get install -y \
+        mssql-tools \
+        unixodbc-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Add sqlcmd and bcp tools to PATH
+ENV PATH="/opt/mssql-tools/bin:$PATH"
+
+# Install Python dependencies
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+# Install any Node.js packages if needed (optional)
+COPY package.json /tmp/package.json
+RUN cd /tmp && if [ -f package.json ]; then npm install; fi
+
+# Set up additional environment configurations (optional)
+ENV LANG=C.UTF-8
+
+# Copy any custom scripts (optional)
+COPY scripts/install-dependencies.sh /tmp/install-dependencies.sh
+RUN chmod +x /tmp/install-dependencies.sh && /tmp/install-dependencies.sh
+
+# Set the working directory
+WORKDIR /workspace
+
+# Expose SQL Server port for connections (optional)
+EXPOSE 1433
