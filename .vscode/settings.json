@@ -1,0 +1,9 @@
+{
+    "sqltools.useNodeRuntime": true,
+
+    "sqltools.connections": [
+   {"name": "SQLite Connection",
+    "driver": "SQLite",
+    "database": "./sql-mm.db"}
+]
+}
