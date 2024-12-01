@@ -1,0 +1,24 @@
+# Base image with Node.js (required for SQLTools extensions)
+FROM node:18
+
+# Install SQLite
+RUN apt-get update && apt-get install -y sqlite3 && apt-get clean
+
+# Install VS Code Server (used in Codespaces)
+RUN apt-get install -y curl \
+    && curl -fsSL https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64 | tar -xz -C /usr/local/bin
+
+# Set up workspace directory
+WORKDIR /workspace
+
+# Install SQLTools CLI for interacting with databases
+RUN npm install -g @mtxr/sqltools
+
+# Add SQLite driver for SQLTools
+RUN npm install -g sqltools-driver-sqlite
+
+# Expose workspace and SQLite database files
+VOLUME ["/workspace"]
+
+# Default command to keep the container running
+CMD ["tail", "-f", "/dev/null"]
